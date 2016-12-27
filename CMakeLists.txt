@@ -3,26 +3,26 @@ project(helloc)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
-if(WINN32)
-    set(X_EMB_LIBS_PATH "ffmpeg-20161227-0ff8c6b-win64-dev/lib")
-
+if(WIN32)
+    set(X_EMB_LIBS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg-3.2.2-win64)
     find_library( FFMPEG_LIBAVFORMAT NAMES avformat PATHS ${X_EMB_LIBS_PATH} NO_DEFAULT_PATH )
     find_library( FFMPEG_LIBAVCODEC  NAMES avcodec  PATHS ${X_EMB_LIBS_PATH} NO_DEFAULT_PATH )
-else(WINN32)
+else(WIN32)
     find_library( FFMPEG_LIBAVFORMAT NAMES avformat )
     find_library( FFMPEG_LIBAVCODEC  NAMES avcodec )
-endif(WINN32)
-
+endif(WIN32)
 
 set(SOURCE_FILES main.c)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-#add_library(avcodec2 SHARED IMPORTED)
-#set_target_properties(avcodec2 PROPERTIES IMPORTED_LOCATION testlib/libavcodec2.so)
+#add_library(avcodec SHARED IMPORTED)
+#set_target_properties(avcodec PROPERTIES IMPORTED_LOCATION lib/avcodec-57.dll)
+#set_target_properties(avcodec PROPERTIES IMPORTED_IMPLIB   lib/avcodec.lib)
 
-#include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg-20161227-0ff8c6b-win64-dev/include )
+link_directories(lib)
+include_directories( ${X_EMB_LIBS_PATH}/include )
 target_link_libraries(
     ${PROJECT_NAME}
-    ${FFMPEG_LIBAVFORMAT}
     ${FFMPEG_LIBAVCODEC}
+    ${FFMPEG_LIBAVFORMAT}
 )
