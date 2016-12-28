@@ -6,3 +6,4 @@ CMakeLists.txt
 Makefile
 cmake_install.cmake
 helloc
+/ffmpeg*.zip
