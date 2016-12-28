@@ -1,0 +1,2 @@
+ffmpeg -re -loop 1 -i Image.jpg -r 3 -an -vcodec mjpeg   -f mpegts udp://127.0.0.1:1234
+ffmpeg -re -loop 1 -i Image.jpg -r 3 -an -vcodec libx264 -f rtp rtp://127.0.0.1:1234
