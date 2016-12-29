@@ -18,6 +18,7 @@ if( WIN32 )
 
     include_directories( ${_V_PROVIDED_INCL_PATH} )
 else( WIN32 )
+    find_library( FFMPEG_LIBAVUTIL   NAMES avutil )
     find_library( FFMPEG_LIBAVFORMAT NAMES avformat )
     find_library( FFMPEG_LIBAVCODEC  NAMES avcodec )
 endif( WIN32 )
