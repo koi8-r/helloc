@@ -92,6 +92,7 @@ int main(int argc, char** argv) {
             pkt_data += pkt.size ; // pkt.size or bytes var ?
             pkt_size -= pkt.size ;
 
+            // mpegts/mpeg2video error
             fail_false(got_picture, 245, "Can't got picture during decode packet frames") ;
 
             // width|heigth|format must be equals in frame and dec_ctx
@@ -118,6 +119,11 @@ int main(int argc, char** argv) {
             fclose( f ) ;
             printf("Image write to file, %d bytes\n", img_bytes) ;
 
+            //img_convert PIX_FMT_YUV420P, PIX_FMT_RGB24
+            //http://dranger.com/ffmpeg/tutorial08.html
+            //https://www.codeproject.com/Tips/112274/FFmpeg-Tutorial
+
+
             av_freep( &video_dst_data[0] ) ;
             // FIXME: ??? segfault av_frame_free( &frame ) ;
 
@@ -138,11 +144,6 @@ int main(int argc, char** argv) {
     //numBytes = avpicture_get_size(PIX_FMT_RGB24, 620, 621) ;
     //buffer = (uint8_t *)av_malloc( numBytes*sizeof(uint8_t) ) ;
     //avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, 620, 621) ;
-
-//av_read_frame()
-    //avcodec_close()
-    //avformat_free_context(fmtCtx) ;
-    // free
 
     avcodec_free_context(&dec_ctx) ;
     avformat_close_input(&fmt_ctx) ;
