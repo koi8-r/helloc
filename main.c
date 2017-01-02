@@ -92,40 +92,42 @@ int main(int argc, char** argv) {
             pkt_data += pkt.size ; // pkt.size or bytes var ?
             pkt_size -= pkt.size ;
 
-            // mpegts/mpeg2video error
-            fail_false(got_picture, 245, "Can't got picture during decode packet frames") ;
+            //if(got_picture) {
+                // mpegts/mpeg2video error
+                fail_false(got_picture, 245, "Can't got picture during decode packet frames");
 
-            // width|heigth|format must be equals in frame and dec_ctx
-            printf( "Picture number: %d\n", frame->coded_picture_number ) ;
-            printf( "Pix fmt: %s\n", av_get_pix_fmt_name( dec_ctx->pix_fmt ) ) ;
+                // width|heigth|format must be equals in frame and dec_ctx
+                printf("Picture number: %d\n", frame->coded_picture_number);
+                printf("Pix fmt: %s\n", av_get_pix_fmt_name(dec_ctx->pix_fmt));
 
-            int img_bytes = av_image_alloc(
-                    video_dst_data, video_dst_linesize,
-                    dec_ctx->width, dec_ctx->height, dec_ctx->pix_fmt, 1
-            ) ;
+                int img_bytes = av_image_alloc(
+                        video_dst_data, video_dst_linesize,
+                        dec_ctx->width, dec_ctx->height, dec_ctx->pix_fmt, 1
+                );
 
-            //TODO: check img_bytes < 0
-            printf("Allocate %d bytes for image\n", img_bytes) ;
+                //TODO: check img_bytes < 0
+                printf("Allocate %d bytes for image\n", img_bytes);
 
-            av_image_copy(
-                video_dst_data, video_dst_linesize,
-                (const uint8_t **) frame->data, frame->linesize,
-                dec_ctx->pix_fmt, dec_ctx->width, dec_ctx->height
-            ) ;
-            printf("Image copied to buffer\n") ;
+                av_image_copy(
+                        video_dst_data, video_dst_linesize,
+                        (const uint8_t **) frame->data, frame->linesize,
+                        dec_ctx->pix_fmt, dec_ctx->width, dec_ctx->height
+                );
+                printf("Image copied to buffer\n");
 
-            FILE *f = fopen("0.raw.pic", "wb") ;
-            fwrite(video_dst_data[0], 1, (size_t) img_bytes, f) ;
-            fclose( f ) ;
-            printf("Image write to file, %d bytes\n", img_bytes) ;
+                FILE *f = fopen("0.raw.pic", "wb");
+                fwrite(video_dst_data[0], 1, (size_t) img_bytes, f);
+                fclose(f);
+                printf("Image write to file, %d bytes\n", img_bytes);
 
-            //img_convert PIX_FMT_YUV420P, PIX_FMT_RGB24
-            //http://dranger.com/ffmpeg/tutorial08.html
-            //https://www.codeproject.com/Tips/112274/FFmpeg-Tutorial
+                //img_convert PIX_FMT_YUV420P, PIX_FMT_RGB24
+                //http://dranger.com/ffmpeg/tutorial08.html
+                //https://www.codeproject.com/Tips/112274/FFmpeg-Tutorial
 
 
-            av_freep( &video_dst_data[0] ) ;
-            // FIXME: ??? segfault av_frame_free( &frame ) ;
+                av_freep(&video_dst_data[0]);
+                // FIXME: ??? segfault av_frame_free( &frame ) ;
+            //}
 
         } while ( pkt_size > 0 ) ;
 
@@ -147,7 +149,8 @@ int main(int argc, char** argv) {
 
     avcodec_free_context(&dec_ctx) ;
     avformat_close_input(&fmt_ctx) ;
-    av_free( &fmt_ctx ) ; // no need if avformat_open_input() fails
+    // ??? segfault
+    //av_free( &fmt_ctx ) ; // no need if avformat_open_input() fails
 
     return 0 ;
 }
