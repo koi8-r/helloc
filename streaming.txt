@@ -7,3 +7,5 @@ ffmpeg -re -loop 1 -i test.jpg -r 3 -an -c:v mjpeg      -f mjpeg -q:v 1 udp://19
 
 ffmpeg -re -loop 1 -i test.jpg -r 60 -an -c:v mpeg2video -f mpegts -q:v 1 udp://192.168.10.130:43210?pkt_size=1316
 ffmpeg -re -loop 1 -i test.jpg -r 60 -an -c:v mjpeg -f mjpeg -q:v 1 udp://192.168.10.130:43210?pkt_size=1316
+
+How VP9 works, technical details & diagrams

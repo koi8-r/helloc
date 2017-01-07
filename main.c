@@ -73,19 +73,24 @@ int main(int argc, char** argv) {
     pkt.size = 0 ;
 
     // new api: https://blogs.gentoo.org/lu_zero/2016/03/29/new-avcodec-api/
+    // https://ffmpeg.org/doxygen/3.1/group__lavc__encdec.html # send/receive encoding and decoding API overview
     //int r = avcodec_receive_frame(dec_ctx, frame) ;
-
+    //avcodec_send_packet(dec_ctx, &pkt) ;
     static uint8_t *video_dst_data[4] = { NULL } ;
     static int video_dst_linesize[4] ;
-    int got_picture = 0 ;
+    int frame_finished = 0 ;
     while ( av_read_frame(fmt_ctx, &pkt) >= 0 ) {
         // Packet may contains single or multiple frames
         int  pkt_size = pkt.size ;
         unsigned char *pkt_data = pkt.data ;
 
+        //FILE *xf = fopen("0.raw.pkt", "wb") ;
+        //fwrite(pkt.data, 1, (size_t) pkt.size, xf) ;
+        //fclose(xf) ;
+
         do {
             printf("pkt size: %d\n", pkt.size) ;
-            int bytes = avcodec_decode_video2(dec_ctx, frame, &got_picture, &pkt) ;
+            int bytes = avcodec_decode_video2(dec_ctx, frame, &frame_finished, &pkt) ;
             printf("Decode %d bytes\n", bytes) ;
             fail_true(bytes < 0, 246, "Can't decode packet frames") ;
             printf("pkt size: %d\n", pkt.size) ;
@@ -94,11 +99,12 @@ int main(int argc, char** argv) {
 
             //if(got_picture) {
                 // mpegts/mpeg2video error
-                fail_false(got_picture, 245, "Can't got picture during decode packet frames");
+                fail_false(frame_finished, 245, "Can't got picture during decode packet frames");
 
                 // width|heigth|format must be equals in frame and dec_ctx
-                printf("Picture number: %d\n", frame->coded_picture_number);
-                printf("Pix fmt: %s\n", av_get_pix_fmt_name(dec_ctx->pix_fmt));
+                printf("Picture number: %d\n", frame->coded_picture_number) ;
+                printf("Pix fmt: %s\n", av_get_pix_fmt_name(dec_ctx->pix_fmt)) ;
+                printf("Key frame?: %c\n", frame->pict_type == AV_PICTURE_TYPE_I) ;
 
                 int img_bytes = av_image_alloc(
                         video_dst_data, video_dst_linesize,
@@ -139,9 +145,9 @@ int main(int argc, char** argv) {
     pkt.data = NULL ;
     pkt.size = 0 ;
     do {
-        int bytes = avcodec_decode_video2(dec_ctx, frame, &got_picture, &pkt) ;
+        int bytes = avcodec_decode_video2(dec_ctx, frame, &frame_finished, &pkt) ;
         printf("Flush %d bytes\n", bytes) ;
-    } while (got_picture) ;
+    } while (frame_finished) ;
 
     //numBytes = avpicture_get_size(PIX_FMT_RGB24, 620, 621) ;
     //buffer = (uint8_t *)av_malloc( numBytes*sizeof(uint8_t) ) ;
