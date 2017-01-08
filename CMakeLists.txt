@@ -3,8 +3,11 @@ project(helloc)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
-set(SOURCE_FILES main.c)
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+set(MAIN_SOURCE_FILES main.c)
+set(IMGS_SOURCE_FILES img_streamer.c)
+
+add_executable(${PROJECT_NAME}_main ${MAIN_SOURCE_FILES})
+add_executable(${PROJECT_NAME}_imgs ${IMGS_SOURCE_FILES})
 
 if( WIN32 )
     message("WINDOWS build")
@@ -33,7 +36,15 @@ find_library( FFMPEG_LIBSWRESAMPLE NAMES swresample PATHS ${_V_PROVIDED_LIBS_PAT
 #link_directories(lib)
 
 target_link_libraries(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}_main
+    ${FFMPEG_LIBAVUTIL}
+    ${FFMPEG_LIBAVCODEC}
+    ${FFMPEG_LIBAVFORMAT}
+    ${FFMPEG_LIBSWRESAMPLE}
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}_imgs
     ${FFMPEG_LIBAVUTIL}
     ${FFMPEG_LIBAVCODEC}
     ${FFMPEG_LIBAVFORMAT}
